@@ -62,9 +62,17 @@ const createOrRetrieveCustomer = async ({ email, uuid }) => {
     // Now insert the customer ID into our Supabase mapping table.
     const { error: supabaseError } = await supabaseAdmin
       .from('customers')
-      .insert([{ id: uuid, stripe_customer_id: customer.id, stripe_checkout_session_id: session.id }]);
+      .insert([{ id: uuid, stripe_customer_id: customer.id }]);
+
     if (supabaseError) throw supabaseError;
-    console.log(`New customer created and inserted for ${uuid}.`);
+
+    const { error: supabaseErrorII } = await supabaseAdmin
+      .from('carts')
+      .insert({ user_id: uuid }, { upsert: true });
+
+    if (supabaseErrorII) throw supabaseErrorII;
+
+    console.log(`New customer & cart created and inserted for ${uuid}.`);
     return customer.id;
   }
   if (data) return data.stripe_customer_id;
@@ -73,9 +81,17 @@ const createOrRetrieveCustomer = async ({ email, uuid }) => {
 const updateCustomerSession = async ({ uuid, session_id }) => {
   const { data, error } = await supabaseAdmin
     .from('customers')
-    .upsert({ id: uuid, stripe_checkout_session_id: session_id });
+    .update({ stripe_checkout_session_id: session_id })
+    .match({ id: uuid })
   
-  if (error) return error;
+  if (error) throw error;
+
+  const { error: supabaseErrorII } = await supabaseAdmin
+      .from('carts')
+      .update({ cart_id: session_id })
+      .match({ id: uuid })
+
+  if (supabaseErrorII) throw supabaseErrorII;
   if (data) return data;
 };
 
@@ -162,6 +178,7 @@ const manageSubscriptionStatusChange = async (
 export {
   upsertProductRecord,
   upsertPriceRecord,
+  updateCustomerSession,
   createOrRetrieveCustomer,
   manageSubscriptionStatusChange
 };

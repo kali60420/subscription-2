@@ -14,17 +14,22 @@ const createCheckoutSession = async (req, res) => {
         uuid: user.id,
         email: user.email
       });
+    
+      let cartItems = {};
+
+      if (cart.length > 0)
+        cart.forEach((item) => cartItem.push({ price: [item.price], quantity: item.quantity }));
+      else 
+        cartItems = { price: JSON.stringify(price), quantity: quantity };
+
+      console.log('cartItems')
+      console.log(cartItems)
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         billing_address_collection: 'required',
         customer,
-        line_items: [
-          {
-            price,
-            quantity
-          }
-        ],
+        line_items: [cartItems],
         mode: 'subscription',
         allow_promotion_codes: true,
         subscription_data: {

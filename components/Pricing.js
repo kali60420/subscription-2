@@ -14,7 +14,9 @@ export default function Pricing({ donations }) {
   const [priceIdLoading, setPriceIdLoading] = useState();
   const { session, userLoaded, cart, subscription } = useUser();
 
-  const handleCheckout = async (item, price) => {
+  console.log(session);
+
+  const handleCheckout = async (price) => {
     
     setPriceIdLoading(price.id);
     if (!session) {
@@ -27,12 +29,11 @@ export default function Pricing({ donations }) {
     try {
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',
-        data: { cart, price },
+        data: cart ? { cart, price } : { cart: {}, price },
         token: session.access_token
       });
 
       const stripe = await getStripe();
-      console.log(cart);
 
       // stripe.redirectToCheckout({ sessionId });
     } catch (error) {
@@ -102,7 +103,6 @@ export default function Pricing({ donations }) {
         </div>
         <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:mx-0 xl:grid-cols-4">
           {donations.map((product) => {
-            console.log(product);
             const price = product.prices.find(
               (price) => price.interval === billingInterval
             );
@@ -141,7 +141,7 @@ export default function Pricing({ donations }) {
                     type="button"
                     disabled={session && !userLoaded}
                     loading={priceIdLoading === price.id}
-                    onClick={() => handleCheckout(product, price)}
+                    onClick={() => handleCheckout(price)}
                     className="mt-8 block w-full rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-gray-900"
                   >
                     {product.name === subscription?.prices?.products.name

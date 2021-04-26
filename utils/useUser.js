@@ -11,8 +11,8 @@ export const UserContextProvider = (props) => {
   const [subscription, setSubscription] = useState(null);
   const [wishlist, setWishlist] = useState(null);
   const [checkoutId, setCheckoutId] = useState(null);
-  const [cart, setCart] = useState(null);
-  const [cartItem, setCartItem] = useState(null);
+  const [cart, setCart] = useState({});
+  const [cartItem, setCartItem] = useState({});
 
   useEffect(() => {
     const session = supabase.auth.session();
@@ -118,13 +118,14 @@ export const UserContextProvider = (props) => {
     .from('carts')
     .insert([cartItem], { upsert: true })
     .match({ cart_id: checkoutId, user_id: user.id })
+    .single()
 
     useEffect(() => {
       if (user) {
         Promise.allSettled([getUserDetails(),upsertCart()]).then(
           (results) => {
             setUserDetails(results[0].value.data);
-            setCartItem(null);
+            setCart(results[1].value.data);
             setUserLoaded(true);
           }
         );
@@ -144,7 +145,6 @@ export const UserContextProvider = (props) => {
           (results) => {
             setUserDetails(results[0].value.data);
             setCart(results[1].value.data);
-            setCartItem(null);
             setUserLoaded(true);
           }
         );
@@ -179,6 +179,7 @@ export const UserContextProvider = (props) => {
     userDetails,
     userLoaded,
     wishlist,
+    upsertCart,
     signIn: (options) => supabase.auth.signIn(options),
     signUp: (options) => supabase.auth.signUp(options),
     signOut: () => {

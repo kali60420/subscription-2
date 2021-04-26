@@ -111,7 +111,7 @@ export const UserContextProvider = (props) => {
       }
     }, [user]);
     
-  const removeCartItem = (item, stripe_checkout_session_id) => 
+  const removeCartItem = (stripe_checkout_session_id, item) => 
   supabase
     .from('carts')
     .delete()
@@ -120,7 +120,7 @@ export const UserContextProvider = (props) => {
 
     useEffect(() => {
       if (user) {
-        Promise.allSettled([getUserDetails(), (item) => removeCartItem(item, user.stripe_checkout_session_id)]).then(
+        Promise.allSettled([getUserDetails(), removeCartItem(user.stripe_checkout_session_id)]).then(
           (results) => {
             setUserDetails(results[0].value.data);
             setCart(results[1].value.data);

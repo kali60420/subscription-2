@@ -35,6 +35,7 @@ const createCheckoutSession = async (req, res) => {
 
         cart = await upsertCart(item, user.stripe_checkout_session_id);   
       } else {
+        cart = await upsertCart(item, user.stripe_checkout_session_id);
         const session = await stripe.checkout.sessions.update({ id: user.stripe_checkout_session_id }, {
           payment_method_types: ['card'],
           billing_address_collection: 'required',
@@ -50,7 +51,6 @@ const createCheckoutSession = async (req, res) => {
           cancel_url: `${getURL()}/`
         });
 
-        cart = await upsertCart(item, user.stripe_checkout_session_id);
       }
       return res.status(200).json({ sessionId: session.id });
     } catch (err) {

@@ -24,10 +24,13 @@ export default function Pricing({ products, donations }) {
       return router.push('/account');
     }
 
+    console.log(item);
+    console.log(cart);
+
     try {
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',
-        data: { item, price },
+        data: { cart, item, price },
         token: session.access_token
       });
 
@@ -61,8 +64,6 @@ export default function Pricing({ products, donations }) {
       </section>
     );
 
-
-  console.log(cart);
 
   return (
     <section className="bg-black">

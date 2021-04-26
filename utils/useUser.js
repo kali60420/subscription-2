@@ -73,7 +73,8 @@ export const UserContextProvider = (props) => {
     const getCartItem = () =>
     supabase
     .from('customers')
-    .select('item')
+    .select('*, item(*)')
+    .eq('id', user.id)
     .single()
 
     useEffect(() => {

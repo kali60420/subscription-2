@@ -63,7 +63,7 @@ export const UserContextProvider = (props) => {
         Promise.allSettled([getUserDetails(), getCheckoutId()]).then(
           (results) => {
             setUserDetails(results[0].value.data);
-            setCheckoutId(results[1].value.data.stripe_checkout_session_id);
+            setCheckoutId(results[1].value.data);
             setUserLoaded(true);
           }
         );

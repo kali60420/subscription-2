@@ -32,6 +32,8 @@ export default function Pricing({ products, donations }) {
       });
 
       const stripe = await getStripe();
+      console.log(cart);
+
       // stripe.redirectToCheckout({ sessionId });
     } catch (error) {
       return alert(error.message);

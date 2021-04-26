@@ -70,6 +70,15 @@ const createOrRetrieveCustomer = async ({ email, uuid }) => {
   if (data) return data.stripe_customer_id;
 };
 
+const updateCustomerSession = async ({ uuid, session_id }) => {
+  const { data, error } = await supabaseAdmin
+    .from('customers')
+    .upsert({ id: uuid, stripe_checkout_session_id: session_id });
+  
+  if (error) return error;
+  if (data) return data;
+};
+
 /**
  * Copies the billing details from the payment method to the customer object.
  */

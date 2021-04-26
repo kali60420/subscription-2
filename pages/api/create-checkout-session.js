@@ -1,6 +1,6 @@
 import { stripe } from '@/utils/stripe';
 import { getUser } from '@/utils/supabase-admin';
-import { createOrRetrieveCustomer } from '@/utils/useDatabase';
+import { createOrRetrieveCustomer, updateCustomerSession } from '@/utils/useDatabase';
 import { getURL } from '@/utils/helpers';
 
 const createCheckoutSession = async (req, res) => {
@@ -14,10 +14,6 @@ const createCheckoutSession = async (req, res) => {
         uuid: user.id,
         email: user.email
       });
-
-
-      console.log(price);
-      console.log(quantity);
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -37,6 +33,12 @@ const createCheckoutSession = async (req, res) => {
         },
         success_url: `${getURL()}/account`,
         cancel_url: `${getURL()}/`
+      });
+
+      
+      await updateCustomerSession({
+        uuid: user.id,
+        session_id: session.id
       });
 
       return res.status(200).json({ sessionId: session.id });

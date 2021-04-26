@@ -54,7 +54,8 @@ export const UserContextProvider = (props) => {
   const getCheckoutId = () =>
     supabase
     .from('customers')
-    .select('stripe_checkout_session_id')
+    .select('*')
+    .eq('id', user.id)
     .single()
 
     useEffect(() => {
@@ -62,7 +63,7 @@ export const UserContextProvider = (props) => {
         Promise.allSettled([getUserDetails(), getCheckoutId()]).then(
           (results) => {
             setUserDetails(results[0].value.data);
-            setCheckoutId(results[1].value.data);
+            setCheckoutId(results[1].value.data.stripe_checkout_session_id);
             setUserLoaded(true);
           }
         );

@@ -1,16 +1,19 @@
 import Pricing from '@/components/Pricing';
-import { getActiveProductsWithPrices } from '@/utils/supabase-client';
+import { getActiveDonationsWithPrices, getActiveItemsWithPrices } from '@/utils/supabase-client';
 
-export default function PricingPage({ products }) {
-  return <Pricing products={products} />;
+export default function PricingPage({ products, donations }) {
+  return (<div>
+    <Pricing products={products} donations={donations} />
+    </div>);
 }
 
 export async function getStaticProps() {
-  const products = await getActiveProductsWithPrices();
-
+  const products = await getActiveItemsWithPrices();
+  const donations = await getActiveDonationsWithPrices();
   return {
     props: {
-      products
+      products,
+      donations
     },
     revalidate: 60
   };

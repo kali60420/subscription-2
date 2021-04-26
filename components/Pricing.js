@@ -7,13 +7,14 @@ import { postData } from '@/utils/helpers';
 import { getStripe } from '@/utils/stripe-client';
 import { useUser } from '@/utils/useUser';
 
-export default function Pricing({ products }) {
+export default function Pricing({ products, donations }) {
   const router = useRouter();
   const [billingInterval, setBillingInterval] = useState('month');
+  const [billingType, setBillingType] = useState('one_time');
   const [priceIdLoading, setPriceIdLoading] = useState();
-  const { session, userLoaded, subscription } = useUser();
+  const { session, userLoaded, cart, subscription } = useUser();
 
-  const handleCheckout = async (price) => {
+  const handleCheckout = async (product, price) => {
     setPriceIdLoading(price.id);
     if (!session) {
       return router.push('/signin');
@@ -25,12 +26,12 @@ export default function Pricing({ products }) {
     try {
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',
-        data: { price },
+        data: { product, price },
         token: session.access_token
       });
 
       const stripe = await getStripe();
-      stripe.redirectToCheckout({ sessionId });
+      // stripe.redirectToCheckout({ sessionId });
     } catch (error) {
       return alert(error.message);
     } finally {
@@ -38,7 +39,7 @@ export default function Pricing({ products }) {
     }
   };
 
-  if (!products.length)
+  if(!donations.length)
     return (
       <section className="bg-black">
         <div className="max-w-6xl mx-auto py-8 sm:py-24 px-4 sm:px-6 lg:px-8">
@@ -58,6 +59,9 @@ export default function Pricing({ products }) {
         </div>
       </section>
     );
+
+
+  console.log(cart);
 
   return (
     <section className="bg-black">
@@ -96,7 +100,7 @@ export default function Pricing({ products }) {
           </div>
         </div>
         <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:mx-0 xl:grid-cols-4">
-          {products.map((product) => {
+          {donations.map((product) => {
             const price = product.prices.find(
               (price) => price.interval === billingInterval
             );
@@ -135,7 +139,7 @@ export default function Pricing({ products }) {
                     type="button"
                     disabled={session && !userLoaded}
                     loading={priceIdLoading === price.id}
-                    onClick={() => handleCheckout(price.id)}
+                    onClick={() => handleCheckout(product, price)}
                     className="mt-8 block w-full rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-gray-900"
                   >
                     {product.name === subscription?.prices?.products.name

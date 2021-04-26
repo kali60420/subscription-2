@@ -62,13 +62,15 @@ const createOrRetrieveCustomer = async ({ email, uuid }) => {
     // Now insert the customer ID into our Supabase mapping table.
     const { error: supabaseError } = await supabaseAdmin
       .from('customers')
-      .insert([{ id: uuid, stripe_customer_id: customer.id }]);
+      .insert([{ id: uuid, stripe_customer_id: customer.id, stripe_checkout_session_id: session.id }]);
     if (supabaseError) throw supabaseError;
     console.log(`New customer created and inserted for ${uuid}.`);
     return customer.id;
   }
   if (data) return data.stripe_customer_id;
 };
+
+
 
 /**
  * Copies the billing details from the payment method to the customer object.

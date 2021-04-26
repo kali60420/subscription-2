@@ -19,7 +19,7 @@ const createCheckoutSession = async (req, res) => {
         payment_method_types: ['card'],
         billing_address_collection: 'required',
         customer,
-        line_items: [cart],
+        line_items: { price, quantity },
         mode: 'subscription',
         allow_promotion_codes: true,
         subscription_data: {

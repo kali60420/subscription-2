@@ -11,7 +11,6 @@ export const UserContextProvider = (props) => {
   const [subscription, setSubscription] = useState(null);
   const [wishlist, setWishlist] = useState(null);
   const [cart, setCart] = useState(null);
-  const [item, setItem] = useState(null);
 
   useEffect(() => {
     const session = supabase.auth.session();
@@ -50,26 +49,6 @@ export const UserContextProvider = (props) => {
     }
   }, [user]);
 
-    const setUserItem = (item) => 
-    supabase
-    .from('customers')
-    .select('*')
-    .eq('stripe_checkout_session_id', stripe_checkout_session_id)
-    .insert({ item }, { upsert: true })
-    .single()
-
-      useEffect(() => {
-        if (user) {
-          Promise.allSettled([getUserDetails(), setUserItem()]).then(
-            (results) => {
-              setUserDetails(results[0].value.data);
-              setCart(results[1].value.data);
-              setUserLoaded(true);
-            }
-          );
-        }
-      }, [user]);
-
     const getCart = (stripe_checkout_session_id) => 
     supabase
     .from('carts')
@@ -97,11 +76,9 @@ export const UserContextProvider = (props) => {
     .eq('items->id', item.id)
     .insert(item, { upsert: true })
 
-    if (item && !item.quantity) item.quantity = 1
-
     useEffect(() => {
       if (user) {
-        Promise.allSettled([getUserDetails(), upsertCart(user.stripe_checkout_session_id)]).then(
+        Promise.allSettled([getUserDetails(), upsertCart()]).then(
           (results) => {
             setUserDetails(results[0].value.data);
             setCart(results[1].value.data);
@@ -120,7 +97,7 @@ export const UserContextProvider = (props) => {
 
     useEffect(() => {
       if (user) {
-        Promise.allSettled([getUserDetails(), removeCartItem(user.stripe_checkout_session_id)]).then(
+        Promise.allSettled([getUserDetails(), removeCartItem()]).then(
           (results) => {
             setUserDetails(results[0].value.data);
             setCart(results[1].value.data);
@@ -149,7 +126,6 @@ export const UserContextProvider = (props) => {
     }, [user]);
 
   const value = {
-    item,
     cart,
     session,
     subscription,

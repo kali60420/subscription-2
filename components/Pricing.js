@@ -12,7 +12,7 @@ export default function Pricing({ products, donations }) {
   const [billingInterval, setBillingInterval] = useState('month');
   const [billingType, setBillingType] = useState('one_time');
   const [priceIdLoading, setPriceIdLoading] = useState();
-  const { session, userLoaded, cart, subscription } = useUser();
+  const { session, userLoaded, cart, subscription, upsertCart } = useUser();
 
   const handleCheckout = async (product, price) => {
     setPriceIdLoading(price.id);
@@ -23,10 +23,12 @@ export default function Pricing({ products, donations }) {
       return router.push('/account');
     }
 
+    const uCart = await upsertCart(session.id, product);
+
     try {
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',
-        data: { product, price },
+        data: { uCart, item, price },
         token: session.access_token
       });
 

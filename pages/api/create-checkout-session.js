@@ -1,12 +1,12 @@
 import { stripe } from '@/utils/stripe';
-import { getUser, getCart } from '@/utils/supabase-admin';
+import { getUser } from '@/utils/supabase-admin';
 import { createOrRetrieveCustomer } from '@/utils/useDatabase';
 import { getURL } from '@/utils/helpers';
 
 const createCheckoutSession = async (req, res) => {
   if (req.method === 'POST') {
     const token = req.headers.token;
-    const { item, price, quantity = 1, metadata = {} } = req.body;
+    const { cart, price, quantity = 1, metadata = {} } = req.body;
 
     try {
       const user = await getUser(token);
@@ -15,14 +15,12 @@ const createCheckoutSession = async (req, res) => {
         email: user.email
       }); 
 
-      const cart = await getCart(user.stripe_checkout_session_id);
-
       if (!cart) {
         const session = await stripe.checkout.sessions.create({
           payment_method_types: ['card'],
           billing_address_collection: 'required',
           customer,
-          line_items: [item],
+          line_items: [cart.items],
           mode: 'subscription',
           allow_promotion_codes: true,
           subscription_data: {
@@ -32,10 +30,7 @@ const createCheckoutSession = async (req, res) => {
           success_url: `${getURL()}/account`,
           cancel_url: `${getURL()}/`
         });
-
-        cart = await upsertCart(item, session.id);   
       } else {
-        cart = await upsertCart(item, user.stripe_checkout_session_id);
         const session = await stripe.checkout.sessions.update({ id: user.stripe_checkout_session_id }, {
           payment_method_types: ['card'],
           billing_address_collection: 'required',

@@ -14,7 +14,8 @@ export default function Pricing({ products, donations }) {
   const [priceIdLoading, setPriceIdLoading] = useState();
   const { session, userLoaded, cart, subscription, upsertCart } = useUser();
 
-  const handleCheckout = async (product, price) => {
+  const handleCheckout = async (item, price) => {
+    
     setPriceIdLoading(price.id);
     if (!session) {
       return router.push('/signin');
@@ -29,8 +30,6 @@ export default function Pricing({ products, donations }) {
         data: { cart, item, price },
         token: session.access_token
       });
-
-      const uCart = await upsertCart(sessionId, product);
 
       const stripe = await getStripe();
       // stripe.redirectToCheckout({ sessionId });

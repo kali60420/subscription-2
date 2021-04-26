@@ -6,7 +6,7 @@ import { getURL } from '@/utils/helpers';
 const createCheckoutSession = async (req, res) => {
   if (req.method === 'POST') {
     const token = req.headers.token;
-    const { cart, price, quantity = 1, metadata = {} } = req.body;
+    const { item, price, quantity = 1, metadata = {} } = req.body;
 
     try {
       const user = await getUser(token);
@@ -15,12 +15,12 @@ const createCheckoutSession = async (req, res) => {
         email: user.email
       }); 
 
-      if (!cart) {
+      if (!user.stripe_checkout_session_id) {
         const session = await stripe.checkout.sessions.create({
           payment_method_types: ['card'],
           billing_address_collection: 'required',
           customer,
-          line_items: [cart.items],
+          line_items: [item],
           mode: 'subscription',
           allow_promotion_codes: true,
           subscription_data: {

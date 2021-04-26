@@ -10,7 +10,9 @@ export const UserContextProvider = (props) => {
   const [userDetails, setUserDetails] = useState(null);
   const [subscription, setSubscription] = useState(null);
   const [wishlist, setWishlist] = useState(null);
+  const [checkoutId, setCheckoutId] = useState(null);
   const [cart, setCart] = useState(null);
+  const [cartItem, setCartItem] = useState(null);
 
   useEffect(() => {
     const session = supabase.auth.session();
@@ -49,16 +51,53 @@ export const UserContextProvider = (props) => {
     }
   }, [user]);
 
-    const getCart = (stripe_checkout_session_id) => 
+  const getCheckoutId = () =>
+    supabase
+    .from('customers')
+    .select('stripe_checkout_session_id')
+    .single()
+
+    useEffect(() => {
+      if (user) {
+        Promise.allSettled([getUserDetails(), getCheckoutId()]).then(
+          (results) => {
+            setUserDetails(results[0].value.data);
+            setCheckoutId(results[1].value.data);
+            setUserLoaded(true);
+          }
+        );
+      }
+    }, [user]);
+
+    const getCartItem = () =>
+    supabase
+    .from('customers')
+    .select('item')
+    .single()
+
+    useEffect(() => {
+      if (user) {
+        Promise.allSettled([getUserDetails(), getCartItem()]).then(
+          (results) => {
+            setUserDetails(results[0].value.data);
+            setCartItem(results[1].value.data);
+            setUserLoaded(true);
+          }
+        );
+      }
+    }, [user]);
+
+
+    const getCart = () => 
     supabase
     .from('carts')
     .select('*')
-    .eq('id', stripe_checkout_session_id)
+    .eq('cartId', checkoutId)
     .single()
 
       useEffect(() => {
         if (user) {
-          Promise.allSettled([getUserDetails(), getCart(user.stripe_checkout_session_id)]).then(
+          Promise.allSettled([getUserDetails(), getCart()]).then(
             (results) => {
               setUserDetails(results[0].value.data);
               setCart(results[1].value.data);
@@ -68,20 +107,19 @@ export const UserContextProvider = (props) => {
         }
       }, [user]);
 
-  const upsertCart = (stripe_checkout_session_id, item) => 
+
+  const upsertCart = () => 
   supabase
     .from('carts')
-    .select('*')
-    .eq('id', stripe_checkout_session_id)
-    .eq('items->id', item.id)
-    .insert(item, { upsert: true })
+    .update([getCartItem()])
+    .match({cartId: checkoutId, items: { id: getCartItem().id } })
 
     useEffect(() => {
       if (user) {
-        Promise.allSettled([getUserDetails(), upsertCart()]).then(
+        Promise.allSettled([getUserDetails(),upsertCart()]).then(
           (results) => {
             setUserDetails(results[0].value.data);
-            setCart(results[1].value.data);
+            setCartItem(null);
             setUserLoaded(true);
           }
         );
@@ -92,8 +130,8 @@ export const UserContextProvider = (props) => {
   supabase
     .from('carts')
     .delete()
-    .match('id', stripe_checkout_session_id) 
-    .match('items->id', item.id)
+    .match('cartId', getCheckoutId()) 
+    .match('items->id', getCartItem().id)
 
     useEffect(() => {
       if (user) {
@@ -101,6 +139,7 @@ export const UserContextProvider = (props) => {
           (results) => {
             setUserDetails(results[0].value.data);
             setCart(results[1].value.data);
+            setCartItem(null);
             setUserLoaded(true);
           }
         );
@@ -142,6 +181,7 @@ export const UserContextProvider = (props) => {
       setUserDetails(null);
       setSubscription(null);
       setCart(null);
+      setCartItem(null);
       setWishlist(null);
       return supabase.auth.signOut();
     }

@@ -156,7 +156,10 @@ export const UserContextProvider = (props) => {
     user,
     userDetails,
     userLoaded,
-    wishlist,    
+    wishlist, 
+    getCart,
+    upsertCart,
+    removeCartItem,
     signIn: (options) => supabase.auth.signIn(options),
     signUp: (options) => supabase.auth.signUp(options),
     signOut: () => {

@@ -4,7 +4,7 @@ export const getURL = () => {
       ? process.env.URL
       : process?.env?.VERCEL_URL && process.env.VERCEL_URL !== ''
       ? process.env.VERCEL_URL
-      : 'https://nextjs-subscription-payments-dusky.vercel.app';
+      : 'http://localhost:3000';
   return url.includes('http') ? url : `https://${url}`;
 };
 

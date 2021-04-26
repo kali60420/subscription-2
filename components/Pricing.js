@@ -7,7 +7,7 @@ import { postData } from '@/utils/helpers';
 import { getStripe } from '@/utils/stripe-client';
 import { useUser } from '@/utils/useUser';
 
-export default function Pricing({ products, donations }) {
+export default function Pricing({ donations }) {
   const router = useRouter();
   const [billingInterval, setBillingInterval] = useState('month');
   const [billingType, setBillingType] = useState('one_time');
@@ -27,7 +27,7 @@ export default function Pricing({ products, donations }) {
     try {
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',
-        data: { cart, item, price },
+        data: { cart, price },
         token: session.access_token
       });
 

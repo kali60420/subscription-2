@@ -21,11 +21,12 @@ export const getActiveDonationsWithPrices = async () => {
 
   let fData = [];
 
+  if (data.length)
   fData.push(data.find(
     (product) => product.metadata.category === 'donation'
-  ))
+  ));
 
-  return fData || [];
+  return fData || {};
 };
 
 export const getActiveItemsWithPrices = async () => {
@@ -44,11 +45,12 @@ export const getActiveItemsWithPrices = async () => {
 
   let fData = [];
 
+  if (data.length)
   fData.push(data.find(
     (product) => product.metadata.category === 'item'
   ))
 
-  return fData || [];
+  return fData || {};
 };
 
 export const updateUserName = async (user, name) => {

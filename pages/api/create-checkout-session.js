@@ -6,7 +6,7 @@ import { getURL } from '@/utils/helpers';
 const createCheckoutSession = async (req, res) => {
   if (req.method === 'POST') {
     const token = req.headers.token;
-    const { cart, item, price, quantity = 1, metadata = {} } = req.body;
+    const { cart, price, quantity = 1, metadata = {} } = req.body;
     
     try {
       const user = await getUser(token);

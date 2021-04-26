@@ -70,8 +70,6 @@ const createOrRetrieveCustomer = async ({ email, uuid }) => {
   if (data) return data.stripe_customer_id;
 };
 
-
-
 /**
  * Copies the billing details from the payment method to the customer object.
  */

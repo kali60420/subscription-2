@@ -41,6 +41,7 @@ create table customers (
   -- The user's customer ID / session ID in Stripe. User must not be able to update this.
   stripe_customer_id text,
   stripe_checkout_session_id text
+  item jsonb
 );
 alter table customers enable row level security;
 -- No policies as this is a private table that the user must not have access to.
@@ -108,6 +109,7 @@ create table carts (
   -- ID from stripe for cart session (checkout session).
   id text primary key,
   user_id uuid references auth.users not null,
+  cart_id text,
   -- Set of key-value pairs, used to store additional information about the object in a structured format.
   items jsonb
 );

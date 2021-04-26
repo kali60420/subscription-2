@@ -97,7 +97,7 @@ export const UserContextProvider = (props) => {
     supabase
     .from('carts')
     .select('*')
-    .eq('cartId', checkoutId)
+    .eq('cart_id', checkoutId)
     .single()
 
       useEffect(() => {
@@ -116,8 +116,8 @@ export const UserContextProvider = (props) => {
   const upsertCart = () => 
   supabase
     .from('carts')
-    .update([getCartItem()])
-    .match({cartId: checkoutId, items: [cartItem] })
+    .insert([cartItem], { upsert: true })
+    .match({ cart_id: checkoutId, user_id: user.id })
 
     useEffect(() => {
       if (user) {
@@ -131,7 +131,7 @@ export const UserContextProvider = (props) => {
       }
     }, [user]);
     
-  const removeCartItem = (stripe_checkout_session_id, item) => 
+  const removeCartItem = () => 
   supabase
     .from('carts')
     .delete()

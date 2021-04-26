@@ -23,14 +23,14 @@ export default function Pricing({ products, donations }) {
       return router.push('/account');
     }
 
-    const uCart = await upsertCart(session.id, product);
-
     try {
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',
-        data: { uCart, item, price },
+        data: { cart, item, price },
         token: session.access_token
       });
+
+      const uCart = await upsertCart(sessionId, product);
 
       const stripe = await getStripe();
       // stripe.redirectToCheckout({ sessionId });

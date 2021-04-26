@@ -33,7 +33,7 @@ const createCheckoutSession = async (req, res) => {
           cancel_url: `${getURL()}/`
         });
 
-        cart = await upsertCart(item, user.stripe_checkout_session_id);   
+        cart = await upsertCart(item, session.id);   
       } else {
         cart = await upsertCart(item, user.stripe_checkout_session_id);
         const session = await stripe.checkout.sessions.update({ id: user.stripe_checkout_session_id }, {

@@ -20,7 +20,7 @@ const createCheckoutSession = async (req, res) => {
           payment_method_types: ['card'],
           billing_address_collection: 'required',
           customer,
-          line_items: [item],
+          line_items: { price, quantity },
           mode: 'subscription',
           allow_promotion_codes: true,
           subscription_data: {
@@ -31,7 +31,7 @@ const createCheckoutSession = async (req, res) => {
           cancel_url: `${getURL()}/`
         });
       } else {
-        const session = await stripe.checkout.sessions.update({ id: user.stripe_checkout_session_id }, {
+        const session = await stripe.checkout.sessions.update({ id: customer.stripe_checkout_session_id }, {
           payment_method_types: ['card'],
           billing_address_collection: 'required',
           customer,

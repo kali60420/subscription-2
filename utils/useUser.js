@@ -54,7 +54,7 @@ export const UserContextProvider = (props) => {
   const getCheckoutId = () =>
     supabase
     .from('customers')
-    .select('*')
+    .select('stripe_checkout_session_id')
     .eq('id', user.id)
     .single()
 
@@ -73,9 +73,12 @@ export const UserContextProvider = (props) => {
     const getCartItem = () =>
     supabase
     .from('customers')
-    .select('*, item(*)')
+    .select('item')
     .eq('id', user.id)
     .single()
+
+    if (!cartItem)
+      
 
     useEffect(() => {
       if (user) {
@@ -114,7 +117,7 @@ export const UserContextProvider = (props) => {
   supabase
     .from('carts')
     .update([getCartItem()])
-    .match({cartId: checkoutId, items: { id: getCartItem().id } })
+    .match({cartId: checkoutId, items: [cartItem] })
 
     useEffect(() => {
       if (user) {
@@ -132,8 +135,8 @@ export const UserContextProvider = (props) => {
   supabase
     .from('carts')
     .delete()
-    .match('cartId', getCheckoutId()) 
-    .match('items->id', getCartItem().id)
+    .match('cartId', checkoutId) 
+    .match('items', cartItem)
 
     useEffect(() => {
       if (user) {
@@ -168,15 +171,14 @@ export const UserContextProvider = (props) => {
 
   const value = {
     cart,
+    cartItem,
+    checkoutId,
     session,
     subscription,
     user,
     userDetails,
     userLoaded,
-    wishlist, 
-    getCart,
-    upsertCart,
-    removeCartItem,
+    wishlist,
     signIn: (options) => supabase.auth.signIn(options),
     signUp: (options) => supabase.auth.signUp(options),
     signOut: () => {

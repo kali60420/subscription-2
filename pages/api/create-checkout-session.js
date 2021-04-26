@@ -2,7 +2,6 @@ import { stripe } from '@/utils/stripe';
 import { getUser, getCart } from '@/utils/supabase-admin';
 import { createOrRetrieveCustomer } from '@/utils/useDatabase';
 import { getURL } from '@/utils/helpers';
-import getCart from '@/assets/bigcommerce/api/cart/handlers/get-cart';
 
 const createCheckoutSession = async (req, res) => {
   if (req.method === 'POST') {

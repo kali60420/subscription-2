@@ -24,9 +24,6 @@ export default function Pricing({ products, donations }) {
       return router.push('/account');
     }
 
-    console.log(item);
-    console.log(cart);
-
     try {
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',

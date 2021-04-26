@@ -38,8 +38,9 @@ create trigger on_auth_user_created
 create table customers (
   -- UUID from auth.users
   id uuid references auth.users not null primary key,
-  -- The user's customer ID in Stripe. User must not be able to update this.
-  stripe_customer_id text
+  -- The user's customer ID / session ID in Stripe. User must not be able to update this.
+  stripe_customer_id text,
+  stripe_checkout_session_id text
 );
 alter table customers enable row level security;
 -- No policies as this is a private table that the user must not have access to.
@@ -97,6 +98,22 @@ create table prices (
 );
 alter table prices enable row level security;
 create policy "Allow public read-only access." on prices for select using (true);
+
+
+/**
+* CARTS: stored in stripe, synced to DB
+*/
+
+create table carts (
+  -- ID from stripe for cart session (checkout session).
+  id text primary key,
+  user_id uuid references auth.users not null,
+  -- Set of key-value pairs, used to store additional information about the object in a structured format.
+  items jsonb
+);
+alter table carts enable row level security;
+create policy "Can only view own subs data." on carts for select using (auth.uid() = user_id);
+
 
 /**
 * SUBSCRIPTIONS

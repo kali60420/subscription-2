@@ -15,6 +15,10 @@ const createCheckoutSession = async (req, res) => {
         email: user.email
       });
 
+
+      console.log(price);
+      console.log(quantity);
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         billing_address_collection: 'required',
@@ -34,7 +38,7 @@ const createCheckoutSession = async (req, res) => {
         success_url: `${getURL()}/account`,
         cancel_url: `${getURL()}/`
       });
-      console.log(session);
+
       return res.status(200).json({ sessionId: session.id });
     } catch (err) {
       console.log(err);

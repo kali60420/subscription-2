@@ -114,7 +114,7 @@ export default function Pricing({ donations }) {
             }).format(price.unit_amount / 100);
             return (
               <div
-                key={product.id}
+                key={price.id}
                 className={cn(
                   'rounded-lg shadow-sm divide-y divide-accents-2 bg-primary-2',
                   {

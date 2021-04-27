@@ -7,7 +7,6 @@ const createCheckoutSession = async (req, res) => {
   if (req.method === 'POST') {
     const token = req.headers.token;
     const { cart, price, quantity = 1, metadata = {} } = req.body;
-    console.log(price);
     try {
       const user = await getUser(token);
       const customer = await createOrRetrieveCustomer({

@@ -14,7 +14,11 @@ const createCheckoutSession = async (req, res) => {
         email: user.email
       });
 
-      cart.items.push({ price, quantity });
+      const items = [];
+      
+      items.push({ price, quantity });
+      if (!!cart)
+        cart?.items.forEach((item) => items.push(item));
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],

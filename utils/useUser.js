@@ -11,7 +11,7 @@ export const UserContextProvider = (props) => {
   const [subscription, setSubscription] = useState(null);
   const [wishlist, setWishlist] = useState(null);
   const [checkoutId, setCheckoutId] = useState(null);
-  const [cart, setCart] = useState(null);
+  const [cart, setCart] = useState({ items: []});
   const [cartItem, setCartItem] = useState(null);
 
   useEffect(() => {

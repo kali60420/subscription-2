@@ -7,7 +7,7 @@ const createCheckoutSession = async (req, res) => {
   if (req.method === 'POST') {
     const token = req.headers.token;
     const { cart, price, quantity = 1, metadata = {} } = req.body;
-    
+    console.log(price);
     try {
       const user = await getUser(token);
       const customer = await createOrRetrieveCustomer({
@@ -29,7 +29,7 @@ const createCheckoutSession = async (req, res) => {
         payment_method_types: ['card'],
         billing_address_collection: 'required',
         customer,
-        line_items: [cartItems],
+        line_items: cartItems,
         mode: 'subscription',
         allow_promotion_codes: true,
         subscription_data: {

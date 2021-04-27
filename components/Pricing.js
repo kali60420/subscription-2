@@ -103,9 +103,10 @@ export default function Pricing({ donations }) {
         </div>
         <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:mx-0 xl:grid-cols-4">
           {donations.map((product) => {
-            const price = product.prices.find(
+            const prices = product.prices.filter(
               (price) => price.interval === billingInterval
             );
+            { prices.map((price) =>  {
             const priceString = new Intl.NumberFormat('en-US', {
               style: 'currency',
               currency: price.currency,
@@ -151,6 +152,7 @@ export default function Pricing({ donations }) {
                 </div>
               </div>
             );
+            })}
           })}
         </div>
         <div>

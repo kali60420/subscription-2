@@ -106,53 +106,57 @@ export default function Pricing({ donations }) {
             const prices = product.prices.filter(
               (price) => price.interval === billingInterval
             );
-            { prices.map((price) =>  {
-            const priceString = new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: price.currency,
-              minimumFractionDigits: 0
-            }).format(price.unit_amount / 100);
             return (
-              <div
-                key={price.id}
-                className={cn(
-                  'rounded-lg shadow-sm divide-y divide-accents-2 bg-primary-2',
-                  {
-                    'border border-pink': subscription
-                      ? product.name === subscription?.prices?.products.name
-                      : product.name === 'Freelancer'
-                  }
-                )}
-              >
-                <div className="p-6">
-                  <h2 className="text-2xl leading-6 font-semibold text-white">
-                    {product.name}
-                  </h2>
-                  <p className="mt-4 text-accents-5">{product.description}</p>
-                  <p className="mt-8">
-                    <span className="text-5xl font-extrabold white">
-                      {priceString}
-                    </span>
-                    <span className="text-base font-medium text-accents-8">
-                      /{billingInterval}
-                    </span>
-                  </p>
-                  <Button
-                    variant="slim"
-                    type="button"
-                    disabled={session && !userLoaded}
-                    loading={priceIdLoading === price.id}
-                    onClick={() => handleCheckout(price)}
-                    className="mt-8 block w-full rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-gray-900"
-                  >
-                    {product.name === subscription?.prices?.products.name
-                      ? 'Manage'
-                      : 'Subscribe'}
-                  </Button>
+            <>
+              { prices.map((price) =>  {
+              const priceString = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: price.currency,
+                minimumFractionDigits: 0
+              }).format(price.unit_amount / 100);
+              return (
+                <div
+                  key={price.id}
+                  className={cn(
+                    'rounded-lg shadow-sm divide-y divide-accents-2 bg-primary-2',
+                    {
+                      'border border-pink': subscription
+                        ? product.name === subscription?.prices?.products.name
+                        : product.name === 'Freelancer'
+                    }
+                  )}
+                >
+                  <div className="p-6">
+                    <h2 className="text-2xl leading-6 font-semibold text-white">
+                      {product.name}
+                    </h2>
+                    <p className="mt-4 text-accents-5">{product.description}</p>
+                    <p className="mt-8">
+                      <span className="text-5xl font-extrabold white">
+                        {priceString}
+                      </span>
+                      <span className="text-base font-medium text-accents-8">
+                        /{billingInterval}
+                      </span>
+                    </p>
+                    <Button
+                      variant="slim"
+                      type="button"
+                      disabled={session && !userLoaded}
+                      loading={priceIdLoading === price.id}
+                      onClick={() => handleCheckout(price)}
+                      className="mt-8 block w-full rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-gray-900"
+                    >
+                      {product.name === subscription?.prices?.products.name
+                        ? 'Manage'
+                        : 'Subscribe'}
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              );
+              })}
+            </>
             );
-            })}
           })}
         </div>
         <div>

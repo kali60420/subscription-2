@@ -22,9 +22,6 @@ const createCheckoutSession = async (req, res) => {
       else 
         cartItems = { price: JSON.stringify(price), quantity: quantity };
 
-      console.log('cartItems')
-      console.log(cartItems)
-
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         billing_address_collection: 'required',
